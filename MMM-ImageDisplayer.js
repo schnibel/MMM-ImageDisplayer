@@ -14,7 +14,7 @@ Module.register("MMM-ImageDisplayer",{
         title: "Image Displayer",
         fileUrl: "modules/MMM-SimpleLogo/public/logo.png",
         width: '100%',
-        height: '100%' 
+        height: '100%',
         refreshInterval: 0
     },
 
