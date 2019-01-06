@@ -7,5 +7,7 @@
   "author": "Schnibel @schnibel",
   "license": "MIT",
   "devDependencies": {
+    "url": "latest",
+    "fs": "latest"
   }
 }
