@@ -9,67 +9,86 @@
 
 Module.register("MMM-ImageDisplayer",{
     defaults: {
-        localpath: "modules/MMM-ImageDisplayer/files/",
-        updateInterval: 5 * 60 * 1000,
+        localpath: "modules/MMM-FileDownloader/files/",
         animationSpeed: 2.5 * 1000,
-        max_parallel_download: 3,
         title: "Image Displayer",
-        show_table: true,
+        text: "Simple Logo",
+        fileUrl: "modules/MMM-SimpleLogo/public/logo.png",
+        width: "200px",
+        position: "left",
+        refreshInterval: 0
     },
 
 	// Override dom generator.
 	getDom: function() {
-        var table = document.createElement("table");
+        /*var table = document.createElement("table");
         
-        if (this.config.show_table) {
-            var thead = document.createElement("thead");
-                // Table details headers
-                var tr = document.createElement("tr");
-                    var th = document.createElement("th");
-                    th.classList.add("xsmall", "bg-muted");
-                    th.style.textAlign = 'center';
-                    th.style.align = 'center';
-                    th.setAttribute("scope", "col");
-                    th.textContent = this.config.title;
-                    tr.appendChild(th);
-                thead.appendChild(tr);
-            table.appendChild(thead);
+        var thead = document.createElement("thead");
+            // Table details headers
+            var tr = document.createElement("tr");
+                var th = document.createElement("th");
+                th.classList.add("xsmall", "bg-muted");
+                th.style.textAlign = 'center';
+                th.style.align = 'center';
+                th.setAttribute("scope", "col");
+                th.textContent = this.config.title;
+                tr.appendChild(th);
+            thead.appendChild(tr);
+        table.appendChild(thead);
 
-            var tbody = document.createElement("tbody");
-                var tr = document.createElement("tr");
-                    var td = document.createElement("td");
-                    td.classList.add("xsmall");
-                    td.style.align = 'center';
-                    td.textContent = (((this.message !== undefined) && (this.message !== "") && (!this.message.startsWith(this.translate("downloading")))) ? (this.config.files.length + " " + this.translate("downloaded")) : (""));
-                    tr.appendChild(td);
-                tbody.appendChild(tr);
-                tr = document.createElement("tr");
-                    td = document.createElement("td");
-                    td.classList.add("xsmall");
-                    td.style.align = 'center';
-                    td.textContent = (((this.message !== undefined) && (this.message !== "")) ? (this.message) : ("")) ;
-                    tr.appendChild(td);
-                tbody.appendChild(tr);
+        var tbody = document.createElement("tbody");
+            var tr = document.createElement("tr");
+                var td = document.createElement("td");
+                td.classList.add("xsmall");
+                td.style.align = 'center';
+                td.textContent = "";
+                tr.appendChild(td);
+            tbody.appendChild(tr);
+            tr = document.createElement("tr");
+                td = document.createElement("td");
+                td.classList.add("xsmall");
+                td.style.align = 'center';
+                td.textContent = "" ;
+                tr.appendChild(td);
+            tbody.appendChild(tr);
 
-            table.appendChild(tbody);
-        }
-        return table
+        table.appendChild(tbody);
+
+        return table*/
+        var wrapper = document.createElement("div");
+        wrapper.className = 'simple-logo__container';
+        wrapper.classList.add(this.config.position);
+        //wrapper.style.width = this.config.width;
+        wrapper.style.width = this.image_width;
+        wrapper.style.height = this.image_height;
+        
+        var text = document.createTextNode(this.config.text);
+        wrapper.appendChild(text);
+        var img = document.createElement("img");
+        img.setAttribute('src', this.image_path + this.image_filename);
+        wrapper.appendChild(img);
+        return wrapper;
 	},
 
     initialize: function() {
-        // Parse files from config.
-        this.files = [];
+        // Parse images from config.
+        this.images = [];
+        this.image_path = undefined;
+        this.image_filename = undefined;
+        this.image_width = undefined;
+        this.image_height = undefined;
 
-        for(var i = 0; i < this.config.files.length; i++) {
+        for(var i = 0; i < this.config.images.length; i++) {
             var localpath = this.config.localpath;
-            if(this.config.files[i].hasOwnProperty("localpath")) {
-                localpath = this.config.files[i].localpath;
+            if(this.config.images[i].hasOwnProperty("localpath")) {
+                localpath = this.config.images[i].localpath;
             }
 
-            this.files.push({
-                filename: this.config.files[i].filename,
+            this.images.push({
+                filename: this.config.images[i].filename,
+                width: this.config.images[i].width,
+                height: this.config.images[i].height,
                 localpath: localpath,
-                url: this.config.files[i].url,
             });
         }
     },
@@ -78,11 +97,13 @@ Module.register("MMM-ImageDisplayer",{
 	start: function() {
 		Log.info("Starting module: " + this.name);
 
-        this.counter = 0;
         this.initialize();
-		this.getFiles();
+
+        this.sendSocketNotification("IMAGES", {images: this.images,});
+		//this.getFiles();
 	},
 
+        /*
 	getFiles: function() {
 		Log.info("Getting files");
 
@@ -99,38 +120,24 @@ Module.register("MMM-ImageDisplayer",{
                 }
             );
         }
-
 	},
+        */
 
 
 
 	socketNotificationReceived: function(notification, payload) {
-        if (notification === "RESULT_FILE") {
-
-			for(var i = 0; i < this.files.length; i++) {
-                if((payload.filename !== undefined) && (this.files[i].filename === payload.filename)) {
-                    this.files[i].filetype = payload.filetype;
-                    this.files[i].filesize = payload.filesize;
-                    this.counter_intermediate += 1;
-                    this.counter += 1;    // counter is used to know when it will be necessary to updateDom
-                    break; // This is not necessary to stay in the 'for' loop as we got data
+        console.log("socketNotificationReceived " + payload.filename);
+        if (notification === "DISPLAY") {
+            for (var i = 0 ; i < this.images.length ; i++) {
+                if (this.images[i].filename === payload.filename) {
+                    this.image_path = this.images[i].localpath;
+                    this.image_filename = this.images[i].filename;
+                    this.image_width = this.images[i].width;
+                    this.image_height = this.images[i].height;
                 }
-                
             }
-            
-            if (this.counter_intermediate === this.config.max_parallel_download) {
-                this.counter_intermediate = 0;
-                this.getFiles();
-            }
-            
-            if (this.counter === this.files.length) {
-                this.counter = 0;
-                var currentDate = new Date(Date.now()).toLocaleString();
-
-                this.message = currentDate;
-                this.scheduleUpdateInterval();
-            }
-		}
+            this.updateDom();
+        }
 	},
 
 	// Define required scripts.
@@ -156,7 +163,7 @@ Module.register("MMM-ImageDisplayer",{
         self.updateDom(self.config.animationSpeed);
 
         timer = setInterval(function() {
-            self.getFiles();
+            //self.getFiles();
         }, this.config.updateInterval);
     },
 
