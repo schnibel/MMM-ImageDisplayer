@@ -1,0 +1,11 @@
+{
+  "name": "MMM-ImageDisplayer",
+  "version": "0.0.1",
+  "description": "Module to display local images store using HTTP request command",
+  "main": "MMM-ImageDisplayer.js",
+  "scripts": {},
+  "author": "Schnibel @schnibel",
+  "license": "MIT",
+  "devDependencies": {
+  }
+}
