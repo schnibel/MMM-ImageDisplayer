@@ -12,58 +12,21 @@ Module.register("MMM-ImageDisplayer",{
         localpath: "modules/MMM-FileDownloader/files/",
         animationSpeed: 2.5 * 1000,
         title: "Image Displayer",
-        text: "Simple Logo",
         fileUrl: "modules/MMM-SimpleLogo/public/logo.png",
-        width: "200px",
-        position: "left",
+        width: '100%',
+        height: '100%' 
         refreshInterval: 0
     },
 
 	// Override dom generator.
 	getDom: function() {
-        /*var table = document.createElement("table");
-        
-        var thead = document.createElement("thead");
-            // Table details headers
-            var tr = document.createElement("tr");
-                var th = document.createElement("th");
-                th.classList.add("xsmall", "bg-muted");
-                th.style.textAlign = 'center';
-                th.style.align = 'center';
-                th.setAttribute("scope", "col");
-                th.textContent = this.config.title;
-                tr.appendChild(th);
-            thead.appendChild(tr);
-        table.appendChild(thead);
-
-        var tbody = document.createElement("tbody");
-            var tr = document.createElement("tr");
-                var td = document.createElement("td");
-                td.classList.add("xsmall");
-                td.style.align = 'center';
-                td.textContent = "";
-                tr.appendChild(td);
-            tbody.appendChild(tr);
-            tr = document.createElement("tr");
-                td = document.createElement("td");
-                td.classList.add("xsmall");
-                td.style.align = 'center';
-                td.textContent = "" ;
-                tr.appendChild(td);
-            tbody.appendChild(tr);
-
-        table.appendChild(tbody);
-
-        return table*/
         var wrapper = document.createElement("div");
         wrapper.className = 'simple-logo__container';
         wrapper.classList.add(this.config.position);
-        //wrapper.style.width = this.config.width;
-        wrapper.style.width = this.image_width;
-        wrapper.style.height = this.image_height;
+        wrapper.style.width = (this.image_width !== undefined) ? this.image_width : this.config.width;
+        wrapper.style.height = (this.image_height !== undefined) ? this.image_height : this.config.height;
         
-        var text = document.createTextNode(this.config.text);
-        wrapper.appendChild(text);
+        wrapper.appendChild(this.config.title);
         var img = document.createElement("img");
         img.setAttribute('src', this.image_path + this.image_filename);
         wrapper.appendChild(img);
