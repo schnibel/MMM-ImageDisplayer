@@ -26,7 +26,7 @@ Module.register("MMM-ImageDisplayer",{
         wrapper.style.width = (this.image_width !== undefined) ? this.image_width : this.config.width;
         wrapper.style.height = (this.image_height !== undefined) ? this.image_height : this.config.height;
         
-        wrapper.appendChild(this.config.title);
+        //wrapper.appendChild(this.config.title);
         var img = document.createElement("img");
         img.setAttribute('src', this.image_path + this.image_filename);
         wrapper.appendChild(img);
