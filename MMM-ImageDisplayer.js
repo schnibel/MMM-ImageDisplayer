@@ -28,8 +28,10 @@ Module.register("MMM-ImageDisplayer",{
         
         //wrapper.appendChild(this.config.title);
         var img = document.createElement("img");
-        img.setAttribute('src', this.image_path + this.image_filename);
-        wrapper.appendChild(img);
+        if (this.image_path !== undefined && this.image_filename !== undefined) {
+            img.setAttribute('src', this.image_path + this.image_filename);
+            wrapper.appendChild(img);
+        }
         return wrapper;
 	},
 
